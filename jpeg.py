@@ -23,8 +23,8 @@ class JpegParser():
         for p in self.parsers:
             if p.parse(tag):
                 newstruct = p.get_new()
-                newstruct.about()
                 newstruct.read_data(fp)
+                newstruct.about()
                 return True
         return False
 
@@ -46,6 +46,7 @@ class JpegStructure(object):
     def __init__(self):
         self.info = "Base Structure"
         self.data = b""
+        self.data_size
 
     def about(self):
         print(self.info)
@@ -66,6 +67,7 @@ class JpegStructure(object):
         #already read them so want to decrease
         #amount we'll read correctly
         size -= 2
+        self.data_size = size
         self.data = fp.read(size)
 
 
@@ -109,6 +111,7 @@ class SOS(JpegStructure):
     def read_data(self, fp):
         super(SOS, self).read_data(fp)
         self.header_data = self.data
+        self.header_size = self.data_size
 
         #find the size of the rest of the data
         pos = fp.tell()
@@ -129,6 +132,7 @@ class SOS(JpegStructure):
 
         fp.seek(pos)
         self.data = fp.read(i)
+        self.data_size = i
 
 class APP(JpegStructure):
     def __init__(self):
