@@ -152,6 +152,11 @@ class COM(JpegStructure):
         self.tag  = '\xFE'
         self.info = "Comment"
 
+    def about(self):
+        print(self.info)
+        print(unpack('>'+str(self.data_size)+'s', self.data)[0])
+
+
 class EOI(JpegStructure):
     def __init__(self):
         self.tag  = '\xD9'
