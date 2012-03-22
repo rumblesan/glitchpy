@@ -41,7 +41,7 @@ class JpegParser():
         self.parsers.append(EOI())
 
 
-class JpegStructure():
+class JpegStructure(object):
 
     def __init__(self):
         self.info = "Base Structure"
@@ -77,6 +77,9 @@ class SOI(JpegStructure):
     def read_data(self, fp):
         pass
 
+    def write_data(self):
+        pass
+
 class SOF0(JpegStructure):
     def __init__(self):
         self.tag  = '\xC0'
@@ -104,13 +107,8 @@ class SOS(JpegStructure):
         self.header_data = b""
 
     def read_data(self, fp):
-        data = fp.read(2)
-        size = unpack('H', data)[0]
-        #size of data includes 2 size bytes
-        #already read them so want to decrease
-        #amount we'll read correctly
-        size -= 2
-        self.header_data = fp.read(size)
+        super(SOS, self).read_data(fp)
+        self.header_data = self.data
 
         #find the size of the rest of the data
         pos = fp.tell()
