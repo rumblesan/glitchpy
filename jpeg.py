@@ -162,3 +162,7 @@ class EOI(JpegStructure):
         self.tag  = '\xD9'
         self.info = "End of Image"
 
+    def read_data(self, fp):
+       self.data = fp.read(1)
+
+
