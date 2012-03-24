@@ -18,13 +18,21 @@ class JpegParser():
                     self.check_tag(byte, fp)
                 byte = fp.read(1)
 
+    def output_file(self, filename):
+        print("Outputting File")
+        with open(filename, "wb") as fp:
+            for p in self.structures:
+                p.about()
+                p.write_data(fp)
 
     def check_tag(self, tag, fp):
         for p in self.parsers:
             if p.parse(tag):
                 newstruct = p.get_new()
                 newstruct.read_data(fp)
+                newstruct.tag = tag
                 newstruct.about()
+                self.structures.append(newstruct)
                 return True
         return False
 
@@ -46,7 +54,7 @@ class JpegStructure(object):
     def __init__(self):
         self.info = "Base Structure"
         self.data = b""
-        self.data_size
+        self.size = 0
 
     def about(self):
         print(self.info)
@@ -63,12 +71,18 @@ class JpegStructure(object):
     def read_data(self, fp):
         data = fp.read(2)
         size = unpack('>H', data)[0]
-        #size of data includes 2 size bytes
-        #already read them so want to decrease
-        #amount we'll read correctly
-        size -= 2
-        self.data_size = size
-        self.data = fp.read(size)
+        self.size = size
+        #read size - 2 because size includes the 2 bytes
+        #that store the size information
+        self.data = fp.read(size - 2)
+
+    def write_data(self, fp):
+        fp.write('\xFF')
+        fp.write(self.tag)
+        fp.write(pack('>H', self.size))
+        fp.write(self.data)
+
+
 
 
 class SOI(JpegStructure):
@@ -79,8 +93,9 @@ class SOI(JpegStructure):
     def read_data(self, fp):
         pass
 
-    def write_data(self):
-        pass
+    def write_data(self, fp):
+        fp.write('\xFF')
+        fp.write(self.tag)
 
 class SOF0(JpegStructure):
     def __init__(self):
@@ -106,12 +121,11 @@ class SOS(JpegStructure):
     def __init__(self):
         self.tag  = '\xDA'
         self.info = "Start of Scan"
-        self.header_data = b""
 
     def read_data(self, fp):
         super(SOS, self).read_data(fp)
         self.header_data = self.data
-        self.header_size = self.data_size
+        self.header_size = self.size
 
         #find the size of the rest of the data
         pos = fp.tell()
@@ -121,6 +135,7 @@ class SOS(JpegStructure):
             if byte == '\xFF':
                 next_byte = fp.read(1)
                 if next_byte != '\x00':
+                    i -= 1
                     break
                 else:
                     i += 1
@@ -132,16 +147,24 @@ class SOS(JpegStructure):
 
         fp.seek(pos)
         self.data = fp.read(i)
-        self.data_size = i
+        self.size = i
+
+    def write_data(self, fp):
+        fp.write('\xFF')
+        fp.write(self.tag)
+        fp.write(pack('>H', self.header_size))
+        fp.write(self.header_data)
+        fp.write(self.data)
 
 class APP(JpegStructure):
     def __init__(self):
-        self.tag  = [0xE0, 0xEF]
+        self.tag_list = [0xE0, 0xEF]
+        self.tag = b''
         self.info = "App Specific"
 
     def parse(self, tag):
         tag = unpack('B', tag)[0]
-        if tag >= self.tag[0] and tag <= self.tag[1]:
+        if tag >= self.tag_list[0] and tag <= self.tag_list[1]:
             return True
         else:
             return False
@@ -154,7 +177,7 @@ class COM(JpegStructure):
 
     def about(self):
         print(self.info)
-        print(unpack('>'+str(self.data_size)+'s', self.data)[0])
+        print(unpack('>'+str(self.size-2)+'s', self.data)[0])
 
 
 class EOI(JpegStructure):
@@ -163,6 +186,10 @@ class EOI(JpegStructure):
         self.info = "End of Image"
 
     def read_data(self, fp):
-       self.data = fp.read(1)
+        self.data = fp.read(1)
 
+    def write_data(self, fp):
+        fp.write('\xFF')
+        fp.write(self.tag)
+        fp.write(self.data)
 
