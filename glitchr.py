@@ -1,9 +1,9 @@
 #! /usr/bin/env python
 
-import jpeg
+from jpegparser import JpegParser
 
 def main():
-    parser = jpeg.JpegParser("landscape.jpeg")
+    parser = JpegParser("landscape.jpeg")
     parser.parse_file()
     parser.output_file("test.jpg")
 
