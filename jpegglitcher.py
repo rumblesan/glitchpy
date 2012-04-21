@@ -30,7 +30,8 @@ class JpegGlitcher(JpegParser):
     def data_glitch(self):
         for sd in self.compressed_data:
             for i in range(sd.size):
-                if randint(0, 1000) < 100:
-                    newval = pack('B', randint(1, 255))
-                    sd.data[i] = '\xED'
+                if randint(1, 10000) < 10:
+                    if sd.data[i-1] == '\xFF':
+                        sd.data[i-1] = pack('B', randint(1, 254))
+                    sd.data[i] = pack('B', randint(1, 254))
 
