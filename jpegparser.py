@@ -112,6 +112,25 @@ class DHT(JpegStructure):
         self.tag  = '\xC4'
         self.info = "Huffman Table"
 
+    def read_data(self, fp):
+        self.size = unpack('>H', fp.read(2))[0]
+        #read size - 2 because size includes the 2 bytes
+        #that store the size information
+        temp_data        = list(fp.read(self.size - 2))
+        self.miscbits    = temp_data[0]
+        self.group_sizes = temp_data[1:17]
+        self.group_data  = temp_data[17:]
+
+
+
+    def write_data(self, fp):
+        fp.write('\xFF')
+        fp.write(self.tag)
+        fp.write(pack('>H', self.size))
+        fp.write(self.miscbits)
+        fp.write("".join(self.group_sizes))
+        fp.write("".join(self.group_data))
+
 class DQT(JpegStructure):
     def __init__(self):
         self.tag  = '\xDB'
