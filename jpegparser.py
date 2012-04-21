@@ -1,5 +1,5 @@
 
-from struct import *
+from struct import pack, unpack
 
 class JpegParser():
 
@@ -74,13 +74,13 @@ class JpegStructure(object):
         self.size = size
         #read size - 2 because size includes the 2 bytes
         #that store the size information
-        self.data = fp.read(size - 2)
+        self.data = list(fp.read(size - 2))
 
     def write_data(self, fp):
         fp.write('\xFF')
         fp.write(self.tag)
         fp.write(pack('>H', self.size))
-        fp.write(self.data)
+        fp.write("".join(self.data))
 
 
 
@@ -153,7 +153,7 @@ class SOS(JpegStructure):
         fp.write('\xFF')
         fp.write(self.tag)
         fp.write(pack('>H', self.header_size))
-        fp.write(self.header_data)
+        fp.write(''.join(self.header_data))
         fp.write(''.join(self.data))
 
 class APP(JpegStructure):
@@ -177,7 +177,7 @@ class COM(JpegStructure):
 
     def about(self):
         print(self.info)
-        print(unpack('>'+str(self.size-2)+'s', self.data)[0])
+        print(unpack('>'+str(self.size-2)+'s', "".join(self.data))[0])
 
 
 class EOI(JpegStructure):
