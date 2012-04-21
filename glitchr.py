@@ -6,7 +6,7 @@ def main():
     parser = JpegGlitcher("landscape.jpeg")
     parser.parse_file()
     parser.find_parts()
-    parser.data_glitch()
+    parser.huffman_glitch()
     parser.output_file("test.jpg")
 
 if __name__ == "__main__":

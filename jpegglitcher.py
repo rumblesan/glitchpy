@@ -22,7 +22,12 @@ class JpegGlitcher(JpegParser):
                 self.compressed_data.append(p)
 
     def huffman_glitch(self):
-        pass
+        for ht in self.huffmans:
+            for i in range(len(ht.group_data)):
+                if randint(1, 100) < 2:
+                    newval = randint(1, 254)
+                    print("Writing " + str(newval) + " to position " + str(i))
+                    ht.group_data[i] = pack('B', newval)
 
     def quantize_glitch(self):
         for qt in self.quantizes:
