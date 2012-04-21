@@ -1,10 +1,12 @@
 #! /usr/bin/env python
 
-from jpegparser import JpegParser
+from jpegglitcher import JpegGlitcher
 
 def main():
-    parser = JpegParser("landscape.jpeg")
+    parser = JpegGlitcher("landscape.jpeg")
     parser.parse_file()
+    parser.find_parts()
+    parser.data_glitch()
     parser.output_file("test.jpg")
 
 if __name__ == "__main__":
