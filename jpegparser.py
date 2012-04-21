@@ -146,7 +146,7 @@ class SOS(JpegStructure):
             i += 1
 
         fp.seek(pos)
-        self.data = fp.read(i)
+        self.data = list(fp.read(i))
         self.size = i
 
     def write_data(self, fp):
@@ -154,7 +154,7 @@ class SOS(JpegStructure):
         fp.write(self.tag)
         fp.write(pack('>H', self.header_size))
         fp.write(self.header_data)
-        fp.write(self.data)
+        fp.write(''.join(self.data))
 
 class APP(JpegStructure):
     def __init__(self):
