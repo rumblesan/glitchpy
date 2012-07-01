@@ -3,11 +3,21 @@
 from jpegglitcher import JpegGlitcher
 
 def main():
-    parser = JpegGlitcher("landscape.jpeg")
-    parser.parse_file()
+
+    fp = open('landscape.jpeg')
+    data = fp.read()
+    fp.close()
+
+    parser = JpegGlitcher(data)
+    parser.parse_data()
     parser.find_parts()
     parser.data_reverse_glitch()
-    parser.output_file("test.jpg")
 
-if __name__ == "__main__":
+    output = parser.output_data()
+
+    of = open('output.jpg', 'w')
+    of.write(output)
+    of.close()
+
+if __name__ == '__main__':
     main()
