@@ -19,7 +19,7 @@ class JpegParser(object):
                 self.check_tag(byte, self.fileData)
             byte = self.fileData.read(1)
 
-    def output_file(self, filename):
+    def output_data(self):
         output = StringIO()
         for p in self.structures:
             if self.verbose:
