@@ -26,7 +26,7 @@ class JpegParser(object):
                 p.about()
             p.write_data(output)
         output.seek(0)
-        return output
+        return output.read()
 
     def check_tag(self, tag, fp):
         for p in self.parsers:
