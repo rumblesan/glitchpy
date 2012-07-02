@@ -222,3 +222,17 @@ class EOI(JpegStructure):
         fp.write(self.tag)
         fp.write(self.data)
 
+def example():
+    from sys import argv
+
+    inFile = argv[1]
+
+    ifp = open(inFile)
+    data = ifp.read()
+    ifp.close()
+
+    parser = JpegParser(data, verbose=True)
+    parser.parse_data()
+
+if __name__ == '__main__':
+    example()
