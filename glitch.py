@@ -11,7 +11,7 @@ def main():
     parser = JpegGlitcher(data)
     parser.parse_data()
     parser.find_parts()
-    parser.data_reverse_glitch()
+    parser.quantize_glitch(100)
 
     output = parser.output_data()
 
