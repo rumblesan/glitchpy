@@ -29,11 +29,14 @@ class JpegGlitcher(JpegParser):
                     print("Writing " + str(newval) + " to position " + str(i))
                     ht.group_data[i] = pack('B', newval)
 
-    def quantize_glitch(self):
+    def quantize_glitch(self, glitchPercent=60):
+        glitched = False
         for qt in self.quantizes:
             for i in range(3, qt.size - 2): #skip first 3 bytes of data
-                if randint(1, 100) < 60:
+                if randint(1, 100) < glitchPercent:
+                    glitched = True
                     qt.data[i] = pack('B', randint(1, 254))
+        return glitched
 
     def data_rand_glitch(self):
         for sd in self.compressed_data:
