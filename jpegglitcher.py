@@ -38,10 +38,14 @@ class JpegGlitcher(JpegParser):
                     qt.data[i] = pack('B', randint(1, 254))
         return glitched
 
-    def data_rand_glitch(self):
+    def data_rand_glitch(self, glitchPercent=0.1):
+        glitchPercent *= 100 #scale glitch percent up
         for sd in self.compressed_data:
             for i in range(sd.size - 2):
-                if randint(1, 10000) < 10:
+                #randint between 1 and 10,000 to give finer grain control
+                if randint(1, 10000) < glitchPercent:
+                    #if the previous data byte is OxFF then we need to 
+                    #randomise that as well.
                     if sd.data[i-1] == '\xFF':
                         sd.data[i-1] = pack('B', randint(1, 254))
                     sd.data[i] = pack('B', randint(1, 254))
