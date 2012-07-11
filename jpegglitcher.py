@@ -74,3 +74,28 @@ class JpegGlitcher(JpegParser):
                 if sd.data[i] == '\xFF':
                     sd.data[i+1] = '\x00'
 
+
+def example():
+    from sys import argv
+
+    inFile  = argv[1]
+    outFile = argv[2]
+
+    ifp = open(inFile)
+    data = ifp.read()
+    ifp.close()
+
+    parser = JpegGlitcher(data)
+    parser.parse_data()
+    parser.find_parts()
+    parser.quantize_glitch()
+
+    output = parser.output_data()
+
+    ofp = open(outFile, 'w')
+    ofp.write(output)
+    ofp.close()
+
+if __name__ == '__main__':
+    example()
+
