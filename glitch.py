@@ -1,10 +1,19 @@
 #! /usr/bin/env python
 
 from jpegglitcher import JpegGlitcher
+import argparse
 
 def main():
 
-    fp = open('landscape.jpeg')
+    parser = argparse.ArgumentParser(description='A small glitching script')
+    parser.add_argument('-i', '--input', default='landscape.jpeg', type=str,
+                        help='The input file')
+    parser.add_argument('-o', '--output', default='output.jpeg', type=str,
+                        help='The output file')
+
+    args = parser.parse_args()
+
+    fp = open(args.input)
     data = fp.read()
     fp.close()
 
@@ -15,7 +24,7 @@ def main():
 
     output = parser.output_data()
 
-    of = open('output.jpg', 'w')
+    of = open(args.output, 'w')
     of.write(output)
     of.close()
 
